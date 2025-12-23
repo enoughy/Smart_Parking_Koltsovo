@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Parking Map</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+    <!-- Наши стили -->
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/map.css">
+</head>
+<body>
+<script th:inline="javascript">
+    window.isLoggedIn = [[${isLoggedIn}]];
+</script>
+<div id="map"></div>
+
+<!-- Кнопки Войти / Зарегистрироваться -->
+<div class="auth-buttons" th:if="${!isLoggedIn}">
+    <a th:href="@{/login}">Войти</a>
+    <a th:href="@{/register}">Зарегистрироваться</a>
+</div>
+
+<!-- Панель добавления парковки -->
+<div class="controls" id="controls">
+    <div class="controls-header">
+        <h4>Добавить парковку</h4>
+        <button id="closeControlsBtn" class="close-btn">✕</button>
+    </div>
+
+    <form id="addSpotForm">
+        <input type="text" id="desc" placeholder="Описание" required>
+        <input type="number" id="lat" step="0.000001" placeholder="Latitude" required>
+        <input type="number" id="lng" step="0.000001" placeholder="Longitude" required>
+        <button type="submit">Добавить</button>
+    </form>
+    <hr>
+    <button id="locateBtn">В центр карты</button>
+</div>
+
+<div id="spotModal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-window" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-header">
+            <h3 id="modalTitle">Информация о парковке</h3>
+            <button id="modalCloseBtn" class="close-btn" aria-label="Закрыть">✕</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="spotForm">
+                <input type="hidden" id="spotId" />
+                <label>Описание
+                    <input type="text" id="spotDescription" readonly />
+                </label>
+
+                <label>Latitude
+                    <input type="number" id="spotLat" step="0.000001" readonly />
+                </label>
+
+                <label>Longitude
+                    <input type="number" id="spotLng" step="0.000001" readonly />
+                </label>
+
+                <label>
+                    <input type="checkbox" id="spotOccupied" /> Занята
+                </label>
+
+                <div id="modalError" class="error" style="display:none"></div>
+
+                <div class="modal-actions">
+                    <button type="button" id="editBtn" style="display:none">Изменить</button>
+                    <button type="submit" id="saveBtn" style="display:none">Сохранить</button>
+                    <button type="button" id="cancelEditBtn" style="display:none">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="find-parking-panel">
+    <h4>Найти ближайшие свободные парковки</h4>
+    <form id="findParkingForm">
+        <input type="number" id="searchLat" step="0.000001" placeholder="Latitude" required>
+        <input type="number" id="searchLng" step="0.000001" placeholder="Longitude" required>
+        <input type="number" id="searchRadius" step="1" placeholder="Радиус (м)" required>
+        <button type="submit">Найти ближайшие парковки</button>
+    </form>
+    <div id="searchResults"></div>
+</div>
+
+
+<script th:inline="javascript">
+    window.MAP_CONFIG = {
+        lat: [[${lat}]],
+        lng: [[${lng}]],
+        zoom: [[${zoom}]]
+    };
+</script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/js/parking-map.js"></script>
+
+</body>
+</html>
